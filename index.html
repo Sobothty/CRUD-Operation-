@@ -105,7 +105,7 @@
           <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="/tutorials" method="post" class="row needs-validation" novalidate id = "form">
+            <form action="/tutorials" method="post" class="row needs-validation" novalidate id= "form" onsubmit="return checkInput()">
               <div class="col-md-12 mb-3">
                 <label for="title" class="form-label">Tutorial Title:</label>
                 <input type="text" class="form-control" id="title" name="title" placeholder="Enter a catchy title" required>

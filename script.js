@@ -4,8 +4,9 @@ let inputTitle = document.getElementById('title');
 let inputDescription = document.getElementById('content');
 let inputPublished = document.getElementById('published');
 let btnCreate = document.querySelector('.bCreate');
-let invalid = document.querySelector('.invalid-feedback');
 let isEdit = null;
+let valid = document.querySelector('.invalid-feedback')
+
 
 
 
@@ -35,13 +36,13 @@ const rowItem = (listName) => {
     `;
     body.appendChild(row);
 
-  
+
     let status = row.querySelector("span.badge");
     if (item.published === 1) {
       status.innerText = "Published";
       status.classList.add("badge-success");
     } else {
-      status.innerText ="Awaiting";
+      status.innerText = "Awaiting";
       status.classList.add("badge-danger");
     }
   });
@@ -50,13 +51,13 @@ const rowItem = (listName) => {
 fetch(API)
   .then((response) => response.json())
   .then((listName) => {
-    body.innerHTML = ""; 
+    body.innerHTML = "";
     rowItem(listName);
-  
-});
+
+  });
 
 
-function mainBtn () {
+function mainBtn() {
   if (isEdit) {
     let valueStore = inputTitle.value;
     let descriptionStore = inputDescription.value;
@@ -74,12 +75,12 @@ function mainBtn () {
         published: publishedStore
       })
     })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      location.reload(); 
-    });
-    isEdit = null; 
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        location.reload();
+      });
+    isEdit = null;
 
   } else {
     createBtn();
@@ -90,35 +91,61 @@ function mainBtn () {
   inputPublished.checked = false;
 }
 
-function createBtn () {
-  event.preventDefault();
+// check input value
+let isValidate = true;
+function checkInput() {
   let valueStore = inputTitle.value;
   let descriptionStore = inputDescription.value;
-  // let publishedStore = inputPublished.value;
-  let publishedStore = inputPublished.checked ? 1 : 0;
+
+  if (valueStore === "") {
+    inputTitle.classList.add("is-invalid");
+    isValidate = false;
+  } else {
+    inputTitle.classList.remove("is-invalid");
+    isValidate = true;
+  }
+  if(descriptionStore === "") {
+    inputDescription.classList.add("is-invalid");
+    isValidate = false;
+  }else{
+    inputDescription.classList.remove("is-invalid");
+    isValidate = true;
+  }
+  return isValidate;
+
+}
 
 
-  fetch(API, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      title: valueStore,
-      description: descriptionStore,
-      published: publishedStore,
+function createBtn() {
+  event.preventDefault();
+  if (checkInput()) {
+    let valueStore = inputTitle.value;
+    let descriptionStore = inputDescription.value;
+    let publishedStore = inputPublished.checked ? 1 : 0;
+
+
+    fetch(API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title: valueStore,
+        description: descriptionStore,
+        published: publishedStore,
+      })
     })
-  })
-  .then((response) => response.json())
-    .then((data) => {
-      console.log(data)
-      location.reload();
-      
-  })
-    return createBtn;
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        location.reload();
+
+      })
+  }
+  return createBtn;
 };
 
-function deleteData (btn) {
+function deleteData(btn) {
   let row = btn.parentNode.parentNode;
   let id = row.querySelector("p.fw-bold").innerText;
   // console.log(event)
@@ -128,16 +155,16 @@ function deleteData (btn) {
   })
     .then((response) => response.json())
     .then(() => {
-      location.reload(); 
-  })
+      location.reload();
+    })
 
-inputTitle.value = "";
-inputDescription.value = "";
-inputPublished.checked = false;
+  inputTitle.value = "";
+  inputDescription.value = "";
+  inputPublished.checked = false;
 
 };
 
-function editData (btn) {
+function editData(btn) {
   let row = btn.parentNode.parentNode;
   let id = row.querySelector("p.fw-bold").innerText;
   let title = row.querySelector("#title-row").innerText;
@@ -145,7 +172,7 @@ function editData (btn) {
   let published = row.querySelector("span.badge").innerText;
   let modalOpen = document.querySelector('.modal');
 
-  let modal = new mdb.Modal(modalOpen);  
+  let modal = new mdb.Modal(modalOpen);
   modal.show();
   btnCreate.innerText = "Update";
 
@@ -165,11 +192,11 @@ function editData (btn) {
       published: published
     })
   })
-  .then((response) => response.json())
+    .then((response) => response.json())
     .then((data) => {
       console.log(data)
       location.reload();
-  })
+    })
 
   isEdit = id;
 
@@ -183,16 +210,26 @@ function checkPublish() {
   fetch(API)
     .then((response) => response.json())
     .then((listName) => {
-      body.innerHTML = ""; 
+      body.innerHTML = "";
 
       rowItem(listName.filter(item => {
         if (showOnlyPublished && item.published !== 1) return false;
         return true;
       }));
-      
+
     });
 };
 
+function clearData(){
+  inputTitle.value = "";
+  inputDescription.value = "";
+  inputPublished.checked = false;
+  btnCreate.innerText = "Create";
+  isEdit = null;
+  let modalOpen = document.querySelector('.modal');
+  let modal = new mdb.Modal(modalOpen);
+  modal.hide();
+}
 
 
 
